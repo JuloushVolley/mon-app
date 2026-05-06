@@ -31,7 +31,7 @@ const Tweet: React.FC<TweetProps> = ({
   const [likeCount, setLikeCount] = useState(0);
   const [retweeted, setRetweeted] = useState(false);
   const [retweetCount, setRetweetCount] = useState(0);
-  const [commentCount, setCommentCount] = useState(0);
+  const [comments, setComments] = useState<string[]>([]);
 
   const handleLike = () => {
     if (liked) {
@@ -52,8 +52,13 @@ const Tweet: React.FC<TweetProps> = ({
   };
 
   const handleComment = () => {
-    setCommentCount(commentCount + 1);
-    alert(`Ajouter un commentaire pour: "${content}"`);
+    const text = window.prompt(`Ajouter un commentaire pour: "${content}"`);
+
+    if (!text || !text.trim()) {
+      return;
+    }
+
+    setComments((prevComments) => [...prevComments, text.trim()]);
   };
 
   return (
@@ -84,7 +89,7 @@ const Tweet: React.FC<TweetProps> = ({
           <div className="action-group">
             <IonIcon icon={chatbubbleOutline} onClick={handleComment} />
             <span className="action-count">
-              {commentCount > 0 ? commentCount : ""}
+              {comments.length > 0 ? comments.length : ""}
             </span>
           </div>
 
