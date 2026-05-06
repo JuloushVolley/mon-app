@@ -1,2 +1,21 @@
+/* Global light theme */
+:root {
+  --ion-background-color: #ffffff;
+  --ion-text-color: #0f1419;
+  --ion-color-step-50: #ffffff;
+  --ion-color-step-100: #f7f9fa;
+}
+
+html,
+body,
+ion-app,
+ion-content {
+  background: #ffffff;
+  color: #0f1419;
+}
+
+ion-content::part(background) {
+  background: #ffffff;
+}
 /* For information on how to create your own theme, please refer to:
 http://ionicframework.com/docs/theming/ */
