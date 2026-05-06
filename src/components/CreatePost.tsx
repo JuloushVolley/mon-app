@@ -1,30 +1,13 @@
 import { IonInput, IonButton, IonItem, IonLabel } from "@ionic/react";
 import React, { useRef, useState } from "react";
 import { IonCard, IonCardContent } from "@ionic/react";
-import Tweet from "./Post.components";
-type Post = {
-  id: number;
-  username: string;
-  handle: string;
-  content: string;
-  avatar: string;
-  time: string;
-  image?: string;
-};
+import Search from "./Search";
+import { initialPosts, type Post } from "../data/mockPosts";
 
 const PostFeed: React.FC = () => {
   const imageInputRef = useRef<HTMLInputElement | null>(null);
 
-  const [posts, setPosts] = useState<Post[]>([
-    {
-      id: 1,
-      username: "Vous",
-      handle: "you",
-      content: "Premier post",
-      avatar: "https://ionicframework.com/docs/img/demos/avatar.svg",
-      time: "now",
-    },
-  ]);
+  const [posts, setPosts] = useState<Post[]>(initialPosts);
 
   const [formData, setFormData] = useState({
     content: "",
@@ -76,6 +59,14 @@ const PostFeed: React.FC = () => {
         imageInputRef.current.value = "";
       }
     }
+  };
+
+  const handleDeletePost = (postId: number) => {
+    setPosts((currentPosts) => currentPosts.filter((post) => post.id !== postId));
+  };
+
+  const handleDeleteAll = () => {
+    setPosts([]);
   };
 
   return (
@@ -145,17 +136,7 @@ const PostFeed: React.FC = () => {
         </IonCardContent>
       </IonCard>
 
-      {posts.map((post) => (
-        <Tweet
-          key={post.id}
-          username={post.username}
-          handle={post.handle}
-          content={post.content}
-          avatar={post.avatar}
-          time={post.time}
-          image={post.image}
-        />
-      ))}
+      <Search posts={posts} onDeletePost={handleDeletePost} onDeleteAll={handleDeleteAll} />
     </div>
   );
 };

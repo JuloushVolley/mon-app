@@ -1,11 +1,18 @@
 import React, { useState } from "react";
-import { IonCard, IonCardContent, IonAvatar, IonIcon } from "@ionic/react";
+import {
+  IonCard,
+  IonCardContent,
+  IonAvatar,
+  IonIcon,
+  IonButton,
+} from "@ionic/react";
 import {
   heartOutline,
   heart,
   chatbubbleOutline,
   repeatOutline,
   repeat,
+  trashOutline,
 } from "ionicons/icons";
 
 import "./Tweet.css";
@@ -17,6 +24,7 @@ type TweetProps = {
   avatar: string;
   time: string;
   image?: string;
+  onDelete?: () => void;
 };
 
 const Tweet: React.FC<TweetProps> = ({
@@ -26,6 +34,7 @@ const Tweet: React.FC<TweetProps> = ({
   avatar,
   time,
   image,
+  onDelete,
 }) => {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
@@ -114,6 +123,20 @@ const Tweet: React.FC<TweetProps> = ({
               {likeCount > 0 ? likeCount : ""}
             </span>
           </div>
+
+          {onDelete && (
+            <div className="action-group delete-group">
+              <IonButton
+                fill="clear"
+                color="danger"
+                size="small"
+                onClick={onDelete}
+              >
+                <IonIcon icon={trashOutline} slot="start" />
+                Supprimer
+              </IonButton>
+            </div>
+          )}
         </div>
       </IonCardContent>
     </IonCard>
