@@ -2,8 +2,8 @@ import { IonContent, IonPage } from "@ionic/react";
 
 import Header from "../components/Header";
 import "./Home.css";
-import PostFeed from "../components/Post.components";
 
+import PostFeed from "../components/CreatePost";
 const Home: React.FC = () => {
   return (
     <IonPage>

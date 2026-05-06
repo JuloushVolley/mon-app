@@ -69,13 +69,25 @@
 }
 
 /* Tweet Image */
+.tweet-media {
+  width: 100%;
+  margin-bottom: 12px;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #eff3f4;
+  border: 1px solid #e1e8ed;
+}
+
 .tweet-image {
   width: 100%;
-  border-radius: 16px;
-  margin-bottom: 12px;
-  max-height: 400px;
+  display: block;
+  aspect-ratio: 16 / 9;
+  max-height: 520px;
   object-fit: cover;
-  background-color: #eff3f4;
+}
+
+.tweet-media .tweet-image {
+  margin: 0;
 }
 
 /* Tweet Actions */
@@ -146,6 +158,10 @@
 
   .tweet-content {
     font-size: 13px;
+  }
+
+  .tweet-media {
+    border-radius: 14px;
   }
 }
 
