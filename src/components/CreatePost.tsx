@@ -1,5 +1,5 @@
 import { IonInput, IonButton, IonItem, IonLabel } from "@ionic/react";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { IonCard, IonCardContent } from "@ionic/react";
 import Tweet from "./Post.components";
 type Post = {
@@ -13,6 +13,8 @@ type Post = {
 };
 
 const PostFeed: React.FC = () => {
+  const imageInputRef = useRef<HTMLInputElement | null>(null);
+
   const [posts, setPosts] = useState<Post[]>([
     {
       id: 1,
@@ -68,6 +70,11 @@ const PostFeed: React.FC = () => {
       };
       setPosts([newPost, ...posts]);
       setFormData({ content: "", image: "" });
+      setSelectedImageName("");
+
+      if (imageInputRef.current) {
+        imageInputRef.current.value = "";
+      }
     }
   };
 
@@ -78,12 +85,12 @@ const PostFeed: React.FC = () => {
           <h2 style={{ margin: "0 0 15px 0" }}>Créer un nouveau post</h2>
 
           <IonItem>
-            <IonLabel position="floating">Contenu</IonLabel>
             <IonInput
               type="text"
+              placeholder="Contenu"
               maxlength={180}
               value={formData.content}
-              onIonChange={(e) =>
+              onIonInput={(e) =>
                 setFormData({
                   ...formData,
                   content: (e.detail.value || "").slice(0, 180),
@@ -97,6 +104,7 @@ const PostFeed: React.FC = () => {
           <IonItem>
             <IonLabel position="stacked">Image depuis mon PC (optionnel)</IonLabel>
             <input
+              ref={imageInputRef}
               type="file"
               accept="image/*"
               onChange={handleImageChange}
