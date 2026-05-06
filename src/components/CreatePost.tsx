@@ -99,7 +99,18 @@ const PostFeed: React.FC = () => {
             />
           </IonItem>
           <div style={{ textAlign: "right", margin: "6px 4px 12px", fontSize: "0.9rem", color: "var(--ion-color-medium)" }}>
-            {formData.content.length}/180 caractères
+            <span
+              style={{
+                color:
+                  formData.content.length === 180
+                    ? "var(--ion-color-danger)"
+                    : "var(--ion-color-medium)",
+                fontWeight: formData.content.length === 180 ? 700 : 400,
+              }}
+            >
+              {formData.content.length}/180 caractères
+              {formData.content.length === 180 ? " - limite atteinte" : ""}
+            </span>
           </div>
           <IonItem>
             <IonLabel position="stacked">Image depuis mon PC (optionnel)</IonLabel>
