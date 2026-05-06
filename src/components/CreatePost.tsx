@@ -1,13 +1,19 @@
-import { IonInput, IonButton, IonItem, IonLabel } from "@ionic/react";
+import {
+  IonInput,
+  IonButton,
+  IonItem,
+  IonLabel,
+  IonCard,
+  IonCardContent,
+} from "@ionic/react";
 import React, { useRef, useState, useEffect } from "react";
-import { IonCard, IonCardContent } from "@ionic/react";
 import Search from "./Search";
 import { initialPosts, type Post } from "../data/mockPosts";
 
 const PostFeed: React.FC = () => {
   const imageInputRef = useRef<HTMLInputElement | null>(null);
 
-  // ✅ Chargement + fallback sécurisé
+  // ✅ Chargement depuis localStorage
   const [posts, setPosts] = useState<Post[]>(() => {
     try {
       const stored = localStorage.getItem("posts");
@@ -39,8 +45,8 @@ const PostFeed: React.FC = () => {
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
     null,
   );
-  const [audioUrl, setAudioUrl] = useState("");
 
+  // ✅ Image → base64
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
 
@@ -63,6 +69,7 @@ const PostFeed: React.FC = () => {
     setSelectedImageName(file.name);
   };
 
+  // ✅ AUDIO → base64 (FIX PRINCIPAL)
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -70,14 +77,25 @@ const PostFeed: React.FC = () => {
       const chunks: Blob[] = [];
 
       mr.ondataavailable = (e) => {
-        if (e.data && e.data.size > 0) chunks.push(e.data);
+        if (e.data.size > 0) chunks.push(e.data);
       };
 
       mr.onstop = () => {
         const blob = new Blob(chunks, { type: "audio/webm" });
-        const url = URL.createObjectURL(blob);
-        setAudioUrl(url);
-        setFormData((prev) => ({ ...prev, audio: url }));
+
+        const reader = new FileReader();
+
+        reader.onloadend = () => {
+          const base64Audio = reader.result as string;
+
+          setFormData((prev) => ({
+            ...prev,
+            audio: base64Audio,
+          }));
+        };
+
+        reader.readAsDataURL(blob);
+
         stream.getTracks().forEach((t) => t.stop());
       };
 
@@ -97,51 +115,42 @@ const PostFeed: React.FC = () => {
     }
   };
 
+  // ✅ Création post
   const handleCreatePost = () => {
     const content = formData.content.trim();
 
-    if (content) {
-      const newPost: Post = {
-        id: Date.now(),
-        username: "Vous",
-        handle: "you",
-        content,
-        image: formData.image.trim() || undefined,
-        audio: formData.audio || undefined,
-        avatar: "https://ionicframework.com/docs/img/demos/avatar.svg",
-        time: "now",
-      };
+    if (!content) return;
 
-      setPosts([newPost, ...posts]);
+    const newPost: Post = {
+      id: Date.now(),
+      username: "Vous",
+      handle: "you",
+      content,
+      image: formData.image || undefined,
+      audio: formData.audio || undefined,
+      avatar: "https://ionicframework.com/docs/img/demos/avatar.svg",
+      time: "now",
+    };
 
-      if (audioUrl) {
-        try {
-          URL.revokeObjectURL(audioUrl);
-        } catch {}
-      }
+    setPosts([newPost, ...posts]);
 
-      setFormData({ content: "", image: "", audio: "" });
-      setSelectedImageName("");
+    // reset
+    setFormData({ content: "", image: "", audio: "" });
+    setSelectedImageName("");
 
-      if (imageInputRef.current) {
-        imageInputRef.current.value = "";
-      }
-
-      setAudioUrl("");
+    if (imageInputRef.current) {
+      imageInputRef.current.value = "";
     }
   };
 
   const handleDeletePost = (postId: number) => {
-    setPosts((currentPosts) =>
-      currentPosts.filter((post) => post.id !== postId),
-    );
+    setPosts((current) => current.filter((p) => p.id !== postId));
   };
 
   const handleDeleteAll = () => {
     setPosts([]);
   };
 
-  // ✅ Reset localStorage
   const handleResetStorage = () => {
     localStorage.removeItem("posts");
     setPosts(initialPosts);
@@ -149,9 +158,9 @@ const PostFeed: React.FC = () => {
 
   return (
     <div>
-      <IonCard className="create-post-card">
+      <IonCard>
         <IonCardContent>
-          <h2>Créer un nouveau post</h2>
+          <h2>Créer un post</h2>
 
           <IonItem>
             <IonInput
@@ -168,12 +177,12 @@ const PostFeed: React.FC = () => {
             />
           </IonItem>
 
-          <div style={{ textAlign: "right", margin: "6px" }}>
+          <div style={{ textAlign: "right" }}>
             {formData.content.length}/180
           </div>
 
           <IonItem>
-            <IonLabel position="stacked">Image (optionnel)</IonLabel>
+            <IonLabel position="stacked">Image</IonLabel>
             <input
               ref={imageInputRef}
               type="file"
@@ -182,24 +191,27 @@ const PostFeed: React.FC = () => {
             />
           </IonItem>
 
-          {selectedImageName && <div>Image: {selectedImageName}</div>}
+          {selectedImageName && <div>📷 {selectedImageName}</div>}
 
           {formData.image && (
             <img src={formData.image} style={{ width: "100%" }} />
           )}
 
-          <div style={{ marginTop: 8 }}>
+          <div style={{ marginTop: 10 }}>
             {!recording ? (
-              <IonButton onClick={startRecording}>Enregistrer audio</IonButton>
+              <IonButton onClick={startRecording}>🎤 Enregistrer</IonButton>
             ) : (
               <IonButton color="danger" onClick={stopRecording}>
-                Stop
+                ⛔ Stop
               </IonButton>
             )}
           </div>
 
-          {audioUrl && (
-            <audio controls src={audioUrl} style={{ width: "100%" }} />
+          {formData.audio && (
+            <>
+              <div>🎧 Audio prêt</div>
+              <audio controls src={formData.audio} style={{ width: "100%" }} />
+            </>
           )}
 
           <IonButton
@@ -212,7 +224,6 @@ const PostFeed: React.FC = () => {
         </IonCardContent>
       </IonCard>
 
-      {/* Boutons gestion */}
       <IonButton expand="block" color="danger" onClick={handleDeleteAll}>
         Supprimer tous les posts
       </IonButton>
