@@ -6,6 +6,7 @@ export type Post = {
   avatar: string;
   time: string;
   image?: string;
+  audio?: string;
 };
 
 export const initialPosts: Post[] = [

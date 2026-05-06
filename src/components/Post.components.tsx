@@ -24,6 +24,7 @@ type TweetProps = {
   avatar: string;
   time: string;
   image?: string;
+  audio?: string;
   onDelete?: () => void;
 };
 
@@ -34,6 +35,7 @@ const Tweet: React.FC<TweetProps> = ({
   avatar,
   time,
   image,
+  audio,
   onDelete,
 }) => {
   const [liked, setLiked] = useState(false);
@@ -87,6 +89,12 @@ const Tweet: React.FC<TweetProps> = ({
         </div>
 
         <div className="tweet-content">{content}</div>
+
+        {audio && (
+          <div className="tweet-media tweet-audio">
+            <audio controls src={audio} style={{ width: "100%" }} />
+          </div>
+        )}
 
         {image && (
           <div className="tweet-media">

@@ -10,6 +10,7 @@ export type SearchPost = {
   avatar: string;
   time: string;
   image?: string;
+  audio?: string;
 };
 
 type SearchProps = {
@@ -102,6 +103,7 @@ const Search: React.FC<SearchProps> = ({
             avatar={post.avatar}
             time={post.time}
             image={post.image}
+            audio={post.audio}
             onDelete={onDeletePost ? () => onDeletePost(post.id) : undefined}
           />
         ))
