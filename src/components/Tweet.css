@@ -194,3 +194,51 @@
   background: #1d9bf0;
   font-weight: 600;
 }
+
+.dark .tweet-card {
+  border: 1px solid rgba(255,255,255,0.06);
+  background: transparent;
+}
+
+.dark .tweet-card:hover {
+  background-color: rgba(255,255,255,0.03);
+}
+
+.dark .tweet-header {
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.dark .tweet-user strong {
+  color: var(--ion-text-color);
+}
+
+.dark .tweet-user span {
+  color: rgba(230,238,245,0.7);
+}
+
+.dark .tweet-content {
+  color: var(--ion-text-color);
+}
+
+.dark .tweet-media {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.04);
+}
+
+.dark .tweet-actions {
+  color: rgba(230,238,245,0.7);
+}
+
+.dark .create-post-card {
+  border: 2px solid rgba(29,155,240,0.15);
+  background: rgba(255,255,255,0.02);
+  box-shadow: none;
+}
+
+.dark .create-post-card h2 {
+  color: #7fc6ff;
+}
+
+.dark .create-post-card ion-button {
+  background: #0f76c1;
+}

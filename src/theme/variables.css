@@ -17,5 +17,25 @@ ion-content {
 ion-content::part(background) {
   background: #ffffff;
 }
+
+/* Dark theme variables (applied when `dark` class is present on <body>) */
+.dark {
+  --ion-background-color: #0b0d0f;
+  --ion-text-color: #e6eef5;
+  --ion-color-step-50: #0b0d0f;
+  --ion-color-step-100: #0f1419;
+}
+
+.dark html,
+.dark body,
+.dark ion-app,
+.dark ion-content {
+  background: var(--ion-background-color);
+  color: var(--ion-text-color);
+}
+
+.dark ion-content::part(background) {
+  background: var(--ion-background-color);
+}
 /* For information on how to create your own theme, please refer to:
 http://ionicframework.com/docs/theming/ */

@@ -6,7 +6,9 @@ import {
   IonSpinner,
 } from "@ionic/react";
 import { Geolocation } from "@capacitor/geolocation";
-import { useState } from "react";
+import { Preferences } from "@capacitor/preferences";
+import { LocalNotifications } from "@capacitor/local-notifications";
+import { useState, useEffect } from "react";
 import "./FooterLocation.css";
 
 const FooterLocation: React.FC = () => {
@@ -16,6 +18,70 @@ const FooterLocation: React.FC = () => {
     null,
   );
   const [city, setCity] = useState<string | null>(null);
+  const [theme, setTheme] = useState<string>("light");
+  const [notifLoading, setNotifLoading] = useState(false);
+
+  useEffect(() => {
+    const loadTheme = async () => {
+      try {
+        const res = await Preferences.get({ key: "theme" });
+        const t = res.value ?? "light";
+        applyTheme(t);
+        setTheme(t);
+      } catch {
+        // rien
+      }
+    };
+
+    loadTheme();
+  }, []);
+
+  const applyTheme = (t: string) => {
+    try {
+      if (typeof document !== "undefined") {
+        document.body.classList.toggle("dark", t === "dark");
+      }
+    } catch {
+      // rien
+    }
+  };
+
+  const toggleTheme = async () => {
+    const next = theme === "dark" ? "light" : "dark";
+    applyTheme(next);
+    setTheme(next);
+    try {
+      await Preferences.set({ key: "theme", value: next });
+    } catch {
+      // rien
+    }
+  };
+
+  const sendTestNotification = async () => {
+    setNotifLoading(true);
+    try {
+      try {
+        await LocalNotifications.requestPermissions();
+      } catch {
+        // rien
+      }
+
+      await LocalNotifications.schedule({
+        notifications: [
+          {
+            id: new Date().getTime() % 100000,
+            title: "Hehe",
+            body: "Yeah boyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+            extra: { source: "mon-app" },
+          },
+        ],
+      });
+    } catch (e) {
+      setError("Impossible d'envoyer la notification.");
+    } finally {
+      setNotifLoading(false);
+    }
+  };
 
   const getCityFromCoords = async (lat: number, lng: number) => {
     const response = await fetch(
@@ -94,6 +160,14 @@ const FooterLocation: React.FC = () => {
           )}
 
           {city && <IonText className="footer-location-text">Ville: {city}</IonText>}
+
+          <IonButton size="small" onClick={toggleTheme}>
+            Thème: {theme === "dark" ? "Sombre" : "Clair"}
+          </IonButton>
+
+          <IonButton size="small" onClick={sendTestNotification} disabled={notifLoading}>
+            {notifLoading ? "Envoi..." : "Test notif"}
+          </IonButton>
 
           {error && (
             <IonText color="danger" className="footer-location-text">
