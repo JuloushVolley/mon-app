@@ -1,0 +1,15 @@
+.footer-location-toolbar {
+  --padding-start: 12px;
+  --padding-end: 12px;
+}
+
+.footer-location-content {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  min-height: 52px;
+}
+
+.footer-location-text {
+  font-size: 0.85rem;
+}
