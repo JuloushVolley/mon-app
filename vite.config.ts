@@ -10,6 +10,12 @@ export default defineConfig({
     react(),
     legacy()
   ],
+  optimizeDeps: {
+    include: ['@capacitor/geolocation']
+  },
+  ssr: {
+    noExternal: ['@capacitor/geolocation']
+  },
   test: {
     globals: true,
     environment: 'jsdom',
