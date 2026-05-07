@@ -45,10 +45,17 @@ const FooterLocation: React.FC = () => {
     setCity(null);
 
     try {
-      try {
-        await Geolocation.requestPermissions();
-      } catch {
-        // Some web environments do not expose permission request APIs.
+      const permissionStatus = await Geolocation.checkPermissions();
+
+      if (permissionStatus.location !== "granted") {
+        const requested = await Geolocation.requestPermissions();
+
+        if (requested.location !== "granted") {
+          setError(
+            "Autorise la localisation dans les permissions de l'application.",
+          );
+          return;
+        }
       }
 
       const position = await Geolocation.getCurrentPosition({
@@ -70,8 +77,23 @@ const FooterLocation: React.FC = () => {
       } catch {
         setCity("Inconnue");
       }
-    } catch {
-      setError("Impossible de recuperer la localisation.");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      const normalized = message.toLowerCase();
+
+      if (normalized.includes("denied")) {
+        setError(
+          "Permission refusee. Active la localisation pour l'application.",
+        );
+      } else if (normalized.includes("location services are not enabled")) {
+        setError("Le service de localisation du telephone est desactive.");
+      } else if (normalized.includes("timeout")) {
+        setError(
+          "Temps d'attente depasse. Essaie en exterieur ou pres d'une fenetre.",
+        );
+      } else {
+        setError("Impossible de recuperer la localisation.");
+      }
     } finally {
       setLoading(false);
     }
@@ -81,7 +103,11 @@ const FooterLocation: React.FC = () => {
     <IonFooter>
       <IonToolbar className="footer-location-toolbar">
         <div className="footer-location-content">
-          <IonButton size="small" onClick={handleGetLocation} disabled={loading}>
+          <IonButton
+            size="small"
+            onClick={handleGetLocation}
+            disabled={loading}
+          >
             {loading ? "Recherche..." : "Ma position"}
           </IonButton>
 
@@ -93,7 +119,9 @@ const FooterLocation: React.FC = () => {
             </IonText>
           )}
 
-          {city && <IonText className="footer-location-text">Ville: {city}</IonText>}
+          {city && (
+            <IonText className="footer-location-text">Ville: {city}</IonText>
+          )}
 
           {error && (
             <IonText color="danger" className="footer-location-text">
